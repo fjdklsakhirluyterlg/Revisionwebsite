@@ -1,3 +1,4 @@
+from enum import unique
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 import requests
@@ -23,7 +24,7 @@ db.create_all()
 
 class Emaillist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    emailadd = db.Column(db.String(100))
+    emailadd = db.Column(db.String(1000), unique=True)
     complete = db.Column(db.Boolean)
 
 db.create_all()
@@ -276,19 +277,26 @@ def delete(todo_id):
 
 @app.route('/newsletter')
 def show_emails():
-    emails = db.session.query("Emaillist").all()
-    return emails
+    emails = db.session.query(Emaillist.emailadd).all()
+    return render_template("newsletter.html", msg=emails)
 
-@app.post("/newsletter/add")
+@app.route("/newsletter/add", methods=["POST", "GET"])
 def add_newsletter():
     try:
-        email = request.form.get("newsletter")
-        new_email = Emaillist(email=text(email), complete=False)
-        db.session.add(new_email)
-        db.session.commit()
-        return "added email to list"
+        if request.method == "POST":
+            emails = db.session.query(Emaillist.emailadd).all()
+            emailx = request.form.get("newsletter")
+            if emailx in emails:
+                return "Already subscribed!"
+            else:
+                new_email = Emaillist(emailadd=str(emailx), complete=False)
+                db.session.add(new_email)
+                db.session.commit()
+                return redirect(url_for("show_emails"))
+        else:
+            return "What?"
     except Exception as e:
-        return f"Could not be carried out because of {e}" 
+        return f"Could not be carried out because {e}" 
 
 @app.route('/history')
 def history():

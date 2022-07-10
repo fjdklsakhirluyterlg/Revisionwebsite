@@ -4,12 +4,14 @@
 </head>
 <body>
     <div>
-        <form action="/newsletter/add">
+        <form action="/newsletter/add" method="post">
             <div>
             <label>Email adress</label>
             <input type="email" name="newsletter">
             </div>
             <button type="submit">Submit</button>
         </form>
+
+        <p>{{msg}}</p>
     </div>
 </body>
