@@ -107,7 +107,7 @@ def coefficient(x,y):
 
 @app.route('/')
 def hello_world():
-    return '<p> Hello </p>'
+    return render_template("index.html")
 
 @app.route('/bitcoin')
 def get_bitcoin():
