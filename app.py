@@ -1,5 +1,5 @@
 from enum import unique
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect, send_from_directory, send_file, flash
 from flask_sqlalchemy import SQLAlchemy
 import requests
 import smtplib
@@ -7,6 +7,8 @@ import ssl
 from email.message import EmailMessage
 from itertools import permutations
 from sqlalchemy.sql import text
+import os
+import random
 
 app = Flask(__name__)
 
@@ -287,7 +289,7 @@ def add_newsletter():
             emails = db.session.query(Emaillist.emailadd).all()
             emailx = request.form.get("newsletter")
             if emailx in emails:
-                return "Already subscribed!"
+                flash("Already subscribed!", category="error")
             else:
                 new_email = Emaillist(emailadd=str(emailx), complete=False)
                 db.session.add(new_email)
@@ -347,6 +349,15 @@ def unique_permutate():
         return render_template("permutations.html", permutations=li, len=len(li))
     else:
         return render_template('permutations.html')
-        
+
+# @app.route("/files/get")
+# def send_randomfile():
+#         x = os.listdir("/Users/mohuasen/prev/all/Armaan/PDFS")
+#         file = random.choice(x)
+#         try:
+#             return send_file(file)
+        # except Exception as e:
+            # return e
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5050)
+    app.run(host="0.0.0.0", port=5050, debug=True)
